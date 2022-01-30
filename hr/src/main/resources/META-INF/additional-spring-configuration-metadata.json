@@ -1,0 +1,62 @@
+{"properties": [
+  {
+    "name": "hr.salary.def.percent",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.def.percent'"
+  },
+  {
+    "name": "hr.salary.smart.limit1",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.limit1'"
+  },
+  {
+    "name": "hr.salary.smart.limit2",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.limit2'"
+  },
+  {
+    "name": "hr.salary.smart.limit3",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.limit3'"
+  },
+  {
+    "name": "hr.salary.smart.percent1",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.percent1'"
+  },
+  {
+    "name": "hr.salary.smart.percent2",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.percent2'"
+  },
+  {
+    "name": "hr.salary.smart.percent3",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.percent3'"
+  },
+  {
+    "name": "hr.salary.smart.limitsAndPercents.2",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.limitsAndPercents.2'"
+  },
+  {
+    "name": "hr.salary.smart.limitsAndPercents.4",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.limitsAndPercents.4'"
+  },
+  {
+    "name": "hr.salary.smart.limitsAndPercents.6",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.limitsAndPercents.6'"
+  },
+  {
+    "name": "hr.salary.smart.limitsAndPercents.8",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.limitsAndPercents.8'"
+  },
+  {
+    "name": "hr.salary.smart.limitsAndPercents.10",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.salary.smart.limitsAndPercents.10'"
+  }
+]}

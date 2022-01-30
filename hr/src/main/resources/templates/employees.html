@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:ht="http://www.thymLeaf.org">
+<head>
+<meta charset="utf-8">
+<title>HR application</title>
+</head>
+<body>
+	<h1>List of employees</h1>
+	
+	<table border>
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Name</th>
+				<th>position</th>
+				<th>Salary</th>
+				<th>Start Date</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="employee : ${employees}">
+				<td th:text="${employee.id}">id</td>
+				<td> <a th:href="@{/employees/{id}(id = ${employee.id})}" th:text="${employee.name}">name</a></td>
+				<td th:text="${employee.position}">position</td>
+				<td th:text="${employee.salary}">salary</td>
+				<td th:text="${employee.startDate}">startDate</td>
+				<td><a th:href="@{/deleteEmployee/{id}(id = ${employee.id})}">Töröl</a ></td>
+			</tr>		
+		</tbody>
+	</table>
+	
+	<br><br>
+	
+	<form th:action="@{/employees}" method="POST" th:object="${newEmployee}">
+		Id: <input th:field="*{id}" /> <br/>
+		Name: <input th:field="*{name}" /> <br/>
+		Position: <input th:field="*{position}" /> <br/>
+		Salary: <input th:field="*{salary}" /> <br/>
+		StartDate: <input th:field="*{startDate}" /> <br/>
+		<input type="submit" value="Add" />
+	</form >	
+
+</body>
+</html >

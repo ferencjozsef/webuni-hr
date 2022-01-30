@@ -1,0 +1,31 @@
+spring:
+  profiles:
+    active:
+    - smartadfasdf
+  thymeleaf:
+    cache: false
+#---  mvc:#---    format:#---      date-time: yyyy-MM-ddTHH:mm:ss
+  datasource:    url: jdbc:postgresql://localhost:5432/hr
+    username: hr
+    password: hr
+  jpa:    show-sql: true
+    hibernate:      ddl-auto: create
+    open-in-view: false
+ 
+hr:
+  salary:
+    def:
+      percent: 5
+    smart:
+      limit1: 10
+      limit2: 5
+      limit3: 2.5
+      percent1: 15
+      percent2: 5
+      percent3: 2
+      limitsAndPercents:
+        2: 2
+        4: 4
+        6: 6
+        8: 8
+        10: 10

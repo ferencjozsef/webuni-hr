@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:ht="http://www.thymLeaf.org">
+<head>
+<meta charset="utf-8">
+<title>HR application</title>
+</head>
+<body>
+	<h1>Modify employee</h1>
+	
+	
+	<form th:action="@{/updateEmployee}" method="POST" th:object="${employee}">
+		Id: <span th:text="*{id}"></span><br>
+		<input th:field="*{id}" type="hidden"/>
+		Name: <input th:field="*{name}" /> <br/>
+		Position: <input th:field="*{position}" /> <br/>
+		Salary: <input th:field="*{salary}" /> <br/>
+		StartDate: <input th:field="*{startDate}" /> <br/>
+		<input type="submit" value="Save" />
+	</form >	
+
+</body>
+</html >
