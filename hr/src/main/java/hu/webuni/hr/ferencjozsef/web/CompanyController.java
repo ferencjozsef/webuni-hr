@@ -24,7 +24,6 @@ import hu.webuni.hr.ferencjozsef.mapper.CompanyMapper;
 import hu.webuni.hr.ferencjozsef.mapper.EmployeeMapper;
 import hu.webuni.hr.ferencjozsef.model.AverageSalaryByPosition;
 import hu.webuni.hr.ferencjozsef.model.Company;
-import hu.webuni.hr.ferencjozsef.repository.CompanyRepository;
 import hu.webuni.hr.ferencjozsef.service.CompanyService;
 
 @RestController
@@ -40,9 +39,6 @@ public class CompanyController {
 	@Autowired
 	EmployeeMapper employeeMapper;
 	
-	@Autowired
-	CompanyRepository companyRepository;
-
 	// Az összes cég visszaadása
 	@GetMapping
 	public List<CompanyDto> getAll(@RequestParam(required = false) Boolean full) {
@@ -53,7 +49,7 @@ public class CompanyController {
 			return companyMapper.companiesToSummaryDtos(companies);
 
 		} else {
-			companies = companyRepository.findAllWithEmployees();
+			companies= companyService.findAllWithEmployees();
 			return companyMapper.companiesToDtos(companies);
 		}
 	}
@@ -61,12 +57,12 @@ public class CompanyController {
 	// Adott id-jú cég visszadása
 	@GetMapping("/{id}")
 	public CompanyDto getById(@PathVariable long id, @RequestParam(required = false) Boolean full) {
-		Company company = companyService.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
 		if (isFull(full)) {
+			Company company = companyService.findByIdWithEmployee(id);
 			return companyMapper.companyToDto(company);
 		} else {
+			Company company = companyService.findById(id)
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 			return companyMapper.companyToSummaryDto(company);
 		}
 	}
@@ -103,7 +99,7 @@ public class CompanyController {
 	@PostMapping("/{id}/employees")
 	public CompanyDto addNewEmployee(@PathVariable long id, @RequestBody EmployeeDto employeeDto) {
 		try {
-			return companyMapper.companyToDto(
+			return companyMapper.companyToSummaryDto(
 					companyService.addNewEmployeeToCompany(id, employeeMapper.dtoToEmployee(employeeDto)));
 		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -135,7 +131,7 @@ public class CompanyController {
 
 	@GetMapping("/{id}/salaryStats")
 	public List<AverageSalaryByPosition> getSalaryStatsById(@PathVariable long id, @RequestParam(required = false) Boolean full) {
-		return companyRepository.findAverageSalariesByPosition(id);
+		return companyService.findAverageSalariesByPosition(id);
 	}
 	
 }

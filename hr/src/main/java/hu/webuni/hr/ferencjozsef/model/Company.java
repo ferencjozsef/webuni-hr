@@ -9,13 +9,22 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 
 @NamedEntityGraph(
 		name = "Company.full",
 		attributeNodes = {
-				@NamedAttributeNode("employees"),
-				@NamedAttributeNode("companyType")
+				@NamedAttributeNode("companyType"),
+				@NamedAttributeNode(value = "employees", subgraph = "position-subgraph")
+		},
+		subgraphs = {
+				@NamedSubgraph(
+						name = "position-subgraph",
+						attributeNodes = {
+								@NamedAttributeNode("position")
+						}
+				)
 		}
 )
 @Entity

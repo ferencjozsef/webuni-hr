@@ -3,10 +3,14 @@ package hu.webuni.hr.ferencjozsef.web;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -14,9 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import hu.webuni.hr.ferencjozsef.dto.CompanyDto;
 import hu.webuni.hr.ferencjozsef.dto.EmployeeDto;
-import hu.webuni.hr.ferencjozsef.dto.PositionDto;
 import hu.webuni.hr.ferencjozsef.mapper.EmployeeMapper;
-import hu.webuni.hr.ferencjozsef.mapper.PositionMapper;
 import hu.webuni.hr.ferencjozsef.model.Company;
 import hu.webuni.hr.ferencjozsef.model.Education;
 import hu.webuni.hr.ferencjozsef.model.Employee;
@@ -24,9 +26,9 @@ import hu.webuni.hr.ferencjozsef.model.Position;
 import hu.webuni.hr.ferencjozsef.repository.CompanyRepository;
 import hu.webuni.hr.ferencjozsef.repository.EmployeeRepository;
 import hu.webuni.hr.ferencjozsef.repository.PositionRepository;
-import hu.webuni.hr.ferencjozsef.service.PositionService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase
 public class CompanyControllerIT {
 	
 	private static final String BASE_URI = "/api/companies";
@@ -46,40 +48,98 @@ public class CompanyControllerIT {
 	@Autowired
 	PositionRepository positionRepository;
 	
-//	@Autowired
-//	CompanyService companyService;
+	@BeforeEach
+	public void inti() {
+		employeeRepository.deleteAll();
+		companyRepository.deleteAll();
+	}
 	
-//	@Autowired
-//	CompanyMapper companyMapper;
-
-//	@Autowired
-//	PositionService positionService;
-//	
-//	@Autowired
-//	PositionMapper positionMapper;
-	
-	
-	// új alkalmazott vehető fel
-	//@PostMapping("/{id}/employees")
 	@Test
 	void testThatAddEmployeeToCompany() throws Exception {
 		long companyId = createComapany();
-		Optional<Company> companyOptinal = companyRepository.findById(companyId);
-		assertThat(companyOptinal).isNotEmpty();
 		
-		long employeeId = createEmployee("Kiss István");
-		Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
-		assertThat(employeeOptional).isNotEmpty();
+		Optional<Employee> employee = createEmployee("Kiss István");
 		
-		EmployeeDto addEmployee = employeeMapper.employeeToDto(employeeOptional.get());
+		EmployeeDto addEmployee = employeeMapper.employeeToDto(employee.get());
+		
+		CompanyDto companyBefor = findCompanyById(companyId);
 
 		addEmployeeToCompany(companyId, addEmployee);
 		
-		CompanyDto savedComapany = findCompanyById(companyId);
-		System.out.println("Hali");
+		CompanyDto companyAfter = findCompanyById(companyId);
+
+		assertThat(companyAfter.getEmployees().size() - 1)
+			.isEqualTo(companyBefor.getEmployees().size());
+
+		assertThat(companyAfter.getEmployees().get(0))
+			.usingRecursiveComparison()
+			.isEqualTo(addEmployee);
 	}
 	
+	@Test
+	void testThatDeleteEmployeeFromCompany() throws Exception {
+		long companyId = createComapany();
+		Optional<Employee> employee =  createEmployee("Kiss István");
+		
+		EmployeeDto addEmployee = employeeMapper.employeeToDto(employee.get());
+		addEmployeeToCompany(companyId, addEmployee);
+		
+		CompanyDto companyBefor = findCompanyById(companyId);
+
+		deleteEmployeeToCompany(companyId, employee.get().getId());
+		
+		CompanyDto companyAfter = findCompanyById(companyId);
+
+		assertThat(companyAfter.getEmployees().size() + 1)
+			.isEqualTo(companyBefor.getEmployees().size());
+
+		assertThat(companyAfter.getEmployees())
+			.isEmpty();
+		
+	}
+
+	@Test
+	void testThatReplaceAllEmployeesFromCompany() throws Exception {
+		long companyId = createComapany();
+		Optional<Employee> employee1 = createEmployee("Kiss István 1");
+		
+		EmployeeDto addEmployee = employeeMapper.employeeToDto(employee1.get());
+		addEmployeeToCompany(companyId, addEmployee);
+		
+		CompanyDto companyBefor = findCompanyById(companyId);
+
+		Optional<Employee> employee2 = createEmployee("Kiss István 2");
+		Optional<Employee> employee3 = createEmployee("Kiss István 3");
+
+		List<EmployeeDto> addEmployees = new ArrayList<>();
+		addEmployees.add(employeeMapper.employeeToDto(employee2.get()));
+		addEmployees.add(employeeMapper.employeeToDto(employee3.get()));
+		
+		replaceEmployeesFromCompany(companyId, addEmployees);
+		
+		CompanyDto companyAfter = findCompanyById(companyId);
+
+		assertThat(companyAfter.getEmployees().size() - 1)
+			.isEqualTo(companyBefor.getEmployees().size());
+
+		assertThat(companyAfter.getEmployees())
+			.usingRecursiveComparison()
+			.isEqualTo(addEmployees);
+
+	}
 	
+	private CompanyDto findCompanyById(long companyId) {
+		String path = BASE_URI + "/" + companyId + "?full=true";
+		return webTestClient
+				.get()
+				.uri(path)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(CompanyDto.class)
+				.returnResult()
+				.getResponseBody();
+	}
 	
 	private ResponseSpec addEmployeeToCompany(long companyId, EmployeeDto newEmployeeDto) {
 		String path = BASE_URI + "/" + companyId + "/employees";
@@ -92,53 +152,62 @@ public class CompanyControllerIT {
 				.isOk();
 	}
 
-	private CompanyDto findCompanyById(long companyId) {
-		String path = BASE_URI + "/" + companyId;
+	private ResponseSpec deleteEmployeeToCompany(long companyId, long employeeId) {
+		String path = BASE_URI + "/" + companyId + "/employees/" + employeeId;
 		return webTestClient
-				.get()
+				.delete()
 				.uri(path)
 				.exchange()
 				.expectStatus()
-				.isOk()
-				.expectBody(CompanyDto.class)
-				.returnResult()
-				.getResponseBody();
+				.isOk();
 	}
 
+	private ResponseSpec replaceEmployeesFromCompany(long companyId, List<EmployeeDto> addEmployees) {
+		String path = BASE_URI + "/" + companyId + "/employees";
+		return webTestClient
+				.put()
+				.uri(path)
+				.bodyValue(addEmployees)
+				.exchange()
+				.expectStatus()
+				.isOk();
+	}	
+	
 	private long createComapany() {
-		return companyRepository.save(new Company(null, 123, "IT company", "1111 Budapest ", null, null)).getId();
+		Company savedCompany = companyRepository.save(new Company(null, 123, "IT company", "1111 Budapest ", null, null));
+		Optional<Company> companyOptinal = companyRepository.findById(savedCompany.getId());
+		assertThat(companyOptinal).isNotEmpty();
+		return savedCompany.getId();
 	}
 
-	private long createEmployee(String name) {
+	private Optional<Employee> createEmployee(String name) {
 		Position position = createPosition("tester");
-		return employeeRepository.save(new Employee(null, name, position, 300_000, LocalDateTime.now(), null)).getId();
+		Employee savedEmployee = employeeRepository.save(new Employee(null, name, position, 300_000, LocalDateTime.now(), null));
+		Optional<Employee> employeeOptional = employeeRepository.findById(savedEmployee.getId());
+		assertThat(employeeOptional).isNotEmpty();
+		return employeeOptional;
 	}
 	
 	private Position createPosition(String name) {
 		return positionRepository.save(new Position(name, Education.COLLEGE));
 	}
-	
-//	
-//	private ResponseSpec createEmployee(EmployeeDto newEmployeeDto) {
-//		return webTestClient
-//				.post()
-//				.uri(BASE_URI)
-//				.bodyValue(newEmployeeDto)
-//				.exchange();
-//	}
-//	
-//	
-//	private EmployeeDto createEmployeeDto(String name) {
-//		PositionDto positionDto = createPositionDto("Tester", "COLLEGE");
-//	
-//		return new EmployeeDto(0L, name, positionDto, 400_000,
-//				LocalDateTime.of(2020, 10, 11, 12, 0, 0));
-//	}
-//	
-//	private PositionDto createPositionDto(String name, String education) {
-//		PositionDto positionDto = new PositionDto();
-//		positionDto.setName(name);
-//		positionDto.setEducation(education);
-//		return positionMapper.positionToDto(positionService.save(positionMapper.dtoToPosition(positionDto)));
-//	}
+
+	/*
+	private List<CompanyDto> getAllCompanyies() {
+		List<CompanyDto> responseList = webTestClient
+											.get()
+											.uri(BASE_URI + "?full=true")
+											.exchange()
+											.expectStatus()
+											.isOk()
+											.expectBodyList(CompanyDto.class)
+											.returnResult()
+											.getResponseBody();
+
+		Collections.sort(responseList, Comparator.comparing(CompanyDto::getId));
+
+		return responseList;
+	}
+	*/
+
 }

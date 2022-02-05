@@ -35,9 +35,6 @@ public class EmployeeController {
 	@Autowired
 	EmployeeMapper employeeMapper;
 	
-	@Autowired
-	EmployeeRepository employeeRepository;
-	
 	// Az összes alkalmazott visszaadása
 	// Egy query paraméterben megkapott értéknél magasabb fizetésú alkalmazottak visszaadása
 	@GetMapping
@@ -46,7 +43,7 @@ public class EmployeeController {
 		if(minSalary == null) {
 			employees = employeeService.findAll();
 		} else {
-			employees = employeeRepository.findBySalaryGreaterThan(minSalary);
+			employees = employeeService.findBySalaryGreaterThan(minSalary);
 		}
 		return employeeMapper.employeesToDtos(employees);
 	}
@@ -92,21 +89,24 @@ public class EmployeeController {
 	// // Adott beosztású alkalmazottak
 	@GetMapping("/positionEmployees")
 	public List<EmployeeDto> searchPositionEmployees(@RequestParam(required = true) String position){
-		//return employeeMapper.employeesToDtos(employeeRepository.findByPosition(position));
-		return null;
+		return employeeMapper.employeesToDtos(employeeService.findByPosition(position));
 	}
 	
 	// Adott stringgel kezdődő nevű alkalmazottak, kis-/negybetű ne számítoson
 	@GetMapping("/nameEmployees")
 	public List<EmployeeDto> searchNameEmployees(@RequestParam(required = true) String name){
-		return employeeMapper.employeesToDtos(employeeRepository.findByNameStartingWithIgnoreCase(name));
+		return employeeMapper.employeesToDtos(employeeService.findByNameStartingWithIgnoreCase(name));
 	}
 	
 	// Két adott dátum között belépő alkalmazottak
 	@GetMapping("/dateEmployees")
 	public List<EmployeeDto> searchDateEmployees(@RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate, @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate){
-		return employeeMapper.employeesToDtos(employeeRepository.findByStartDateBetween(startDate,endDate));
+		return employeeMapper.employeesToDtos(employeeService.findByStartDateBetween(startDate,endDate));
 	}
 
+	@GetMapping("/searchEmployees")
+	public List<EmployeeDto> searchEmployees(@RequestBody EmployeeDto employeeDto) {
+		return employeeMapper.employeesToDtos(employeeService.findEmplyeesByExample(employeeMapper.dtoToEmployee(employeeDto)));
+	}
 	
 }

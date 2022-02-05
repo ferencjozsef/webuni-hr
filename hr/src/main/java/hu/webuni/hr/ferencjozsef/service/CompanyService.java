@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import hu.webuni.hr.ferencjozsef.model.AverageSalaryByPosition;
 import hu.webuni.hr.ferencjozsef.model.Company;
 import hu.webuni.hr.ferencjozsef.model.Employee;
 import hu.webuni.hr.ferencjozsef.repository.CompanyRepository;
@@ -20,10 +22,12 @@ public class CompanyService {
 	@Autowired
 	private EmployeeRepository employeeRepository;
 
+	@Transactional
 	public Company save(Company company) {
 		return companyRepository.save(company);
 	}
 
+	@Transactional
 	public Company update(Company company) {
 		if (!companyRepository.existsById(company.getId())) {
 			return null;
@@ -43,10 +47,16 @@ public class CompanyService {
 		return companyRepository.findById(id);
 	}
 
+	public Company findByIdWithEmployee(long id) {
+		return companyRepository.findByIdWithEmployee(id);
+	}
+	
+	@Transactional
 	public void delete(long id) {
 		companyRepository.deleteById(id);
 	}
 
+	@Transactional
 	public Company addNewEmployeeToCompany(long id, Employee employee) {
 		Company company = companyRepository.findById(id).get();
 		company.addEmployee(employee);
@@ -54,6 +64,7 @@ public class CompanyService {
 		return company;
 	}
 
+	@Transactional
 	public Company deleteEmployeeFromCompany(long id, long employeeId) {
 		Company company = companyRepository.findById(id).get();
 		Employee employee = employeeRepository.findById(employeeId).get();
@@ -63,6 +74,7 @@ public class CompanyService {
 		return company;
 	}
 
+	@Transactional
 	public Company replaceAllEmployeesFromCompany(long id, List<Employee> employees) {
 		Company company = companyRepository.findById(id).get();
 		company.getEmployees().forEach(e -> e.setCompany(null));
@@ -73,7 +85,12 @@ public class CompanyService {
 			employeeRepository.save(employee);
 		}
 		
+		companyRepository.save(company);
 		return company;
+	}
+
+	public List<AverageSalaryByPosition> findAverageSalariesByPosition(long companyId) {
+		return companyRepository.findAverageSalariesByPosition(companyId);
 	}
 	
 }

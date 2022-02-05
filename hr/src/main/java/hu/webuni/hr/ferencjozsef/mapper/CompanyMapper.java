@@ -41,15 +41,15 @@ public interface CompanyMapper {
 	CompanyType dtoToCompanyType(CompanyTypeDto companyTypeDto);
 	
 	@Mapping(target = "company", ignore = true)
-	@Mapping(target = "position", ignore = true)
+	//@Mapping(target = "position", ignore = true)
 	EmployeeDto employeeToDto(Employee employee);
 
 	@InheritInverseConfiguration
 	Employee dtoToEmployee(EmployeeDto employeeDto);
 
-//	@Mapping(target = "employees", ignore = true)
-//	PositionDto positionToDto(Position position);
-//
-//	Position dtoToPosition(PositionDto positionDto);
+	@Mapping(target = "employees", ignore = true)
+	PositionDto positionToDto(Position position);
+
+	Position dtoToPosition(PositionDto positionDto);
 	
 }

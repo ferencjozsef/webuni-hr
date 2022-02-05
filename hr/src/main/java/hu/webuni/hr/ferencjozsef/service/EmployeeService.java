@@ -1,5 +1,6 @@
 package hu.webuni.hr.ferencjozsef.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,5 +19,15 @@ public interface EmployeeService {
 	public Employee update(Employee employee);
 	
 	public void delete(long id);
+	
+	public List<Employee> findEmplyeesByExample(Employee example);
+
+	public List<Employee> findBySalaryGreaterThan(Integer minSalary);
+
+	public List<Employee> findByPosition(String position);
+
+	public List<Employee> findByNameStartingWithIgnoreCase(String name);
+
+	public List<Employee> findByStartDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
 }
