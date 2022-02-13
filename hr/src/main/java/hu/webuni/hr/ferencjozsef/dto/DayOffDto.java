@@ -3,36 +3,24 @@ package hu.webuni.hr.ferencjozsef.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class DayOffDto {
 
 	private Long id;
-	@Future
+	@NotNull
 	private LocalDate startDate;
-	@Future
+	@NotNull
 	private LocalDate endDate;
-	private String createUser;
-	@NotEmpty
+	@NotNull
+	private Long employeeId;
 	private LocalDateTime createDate;
+	private Long approverId;
 	private Boolean approved;
-	private String boss;
-
+	private LocalDateTime approvedDate;
+	
 	public DayOffDto() {
 
-	}
-
-	public DayOffDto(Long id, LocalDate startDate, LocalDate endDate, String createUser, LocalDateTime createDate,
-			Boolean approved, String boss) {
-		super();
-		this.id = id;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.createUser = createUser;
-		this.createDate = createDate;
-		this.approved = approved;	
-		this.boss = boss;
 	}
 
 	public Long getId() {
@@ -59,12 +47,12 @@ public class DayOffDto {
 		this.endDate = endDate;
 	}
 
-	public String getCreateUser() {
-		return createUser;
+	public Long getEmployeeId() {
+		return employeeId;
 	}
 
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
+	public void setEmployeeId(Long employeeId) {
+		this.employeeId = employeeId;
 	}
 
 	public LocalDateTime getCreateDate() {
@@ -75,6 +63,14 @@ public class DayOffDto {
 		this.createDate = createDate;
 	}
 
+	public Long getApproverId() {
+		return approverId;
+	}
+
+	public void setApproverId(Long approverId) {
+		this.approverId = approverId;
+	}
+
 	public Boolean getApproved() {
 		return approved;
 	}
@@ -83,12 +79,13 @@ public class DayOffDto {
 		this.approved = approved;
 	}
 
-	public String getBoss() {
-		return boss;
+	public LocalDateTime getApprovedDate() {
+		return approvedDate;
 	}
 
-	public void setBoss(String boss) {
-		this.boss = boss;
+	public void setApprovedDate(LocalDateTime approvedDate) {
+		this.approvedDate = approvedDate;
 	}
 
+	
 }

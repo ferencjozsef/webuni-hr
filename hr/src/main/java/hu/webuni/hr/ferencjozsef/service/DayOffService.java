@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import hu.webuni.hr.ferencjozsef.dto.SearchDayOffDto;
 import hu.webuni.hr.ferencjozsef.model.DayOff;
+import hu.webuni.hr.ferencjozsef.model.Employee;
 import hu.webuni.hr.ferencjozsef.model.DayOff;
 import hu.webuni.hr.ferencjozsef.repository.DayOffRepository;
 
@@ -25,6 +27,9 @@ public class DayOffService {
 	
 	@Autowired
 	private DayOffRepository dayOffRepository;
+	
+	@Autowired
+	EmployeeService employeeService;
 
 	public Page<DayOff> findAll(Pageable pageable) {
 		return dayOffRepository.findAll(pageable);
@@ -34,72 +39,87 @@ public class DayOffService {
 		return dayOffRepository.findById(id);
 	}
 	
-	@Transactional
-	public DayOff save(DayOff dayOff) {
-		return dayOffRepository.save(dayOff);
-	}
-
-	@Transactional
-	public DayOff update(DayOff dayOff) {
-		Optional<DayOff> savedDayOff = findById(dayOff.getId());
-		if (savedDayOff.isEmpty() || savedDayOff.get().getApproved() != null) {
-			return null;
-		}
-
-		savedDayOff.get().setStartDate(dayOff.getStartDate());
-		savedDayOff.get().setEndDate(dayOff.getEndDate());
-		savedDayOff.get().setCreateUser(dayOff.getCreateUser());
-		savedDayOff.get().setCreateDate(dayOff.getCreateDate());
-			
-		return dayOffRepository.save(savedDayOff.get());
-	}
-
-	@Transactional
-	public void delete(long id) {
-		Optional<DayOff> savedDayOff = findById(id);
-		if (savedDayOff.get().getApproved() == null) {
-			dayOffRepository.deleteById(id);
-		}
-	}
-
-	@Transactional
-	public DayOff aprove(DayOff dayOff) {
-		Optional<DayOff> savedDayOff = findById(dayOff.getId());
-		if (savedDayOff.isEmpty()) {
-			return null;
-		}
-		savedDayOff.get().setApproved(dayOff.getApproved());
-		savedDayOff.get().setBoss(dayOff.getBoss());
-		return dayOffRepository.save(savedDayOff.get());
-	}
-
-	public List<DayOff> findDayOffByExample(Boolean approved, String createUser, String boss, 
-			LocalDate createDateStart, LocalDate createDateEnd, LocalDate startDayOffDate,
-			LocalDate endDayOffDate) {
-
+	public Page<DayOff> findDayOffByExample(SearchDayOffDto searchDayOffDto, Pageable pageable) {
+		Boolean approved = searchDayOffDto.getApproved();
+		String employeeName = searchDayOffDto.getEmployeeName();
+		String approverName = searchDayOffDto.getApproverName();
+		LocalDate createDateStart = searchDayOffDto.getCreateDateStart();
+		LocalDate createDateEnd = searchDayOffDto.getCreateDateEnd();
+		LocalDate startDayOffDate = searchDayOffDto.getStartDayOffDate();
+		LocalDate endDayOffDate = searchDayOffDto.getEndDayOffDate();
+		
 		Specification<DayOff> spec = Specification.where(null);
 
 		if (approved != null) {
 			spec = spec.and(DayOffSpecification.hasApproved(approved));
 		}
 
-		if (createUser != null && StringUtils.hasText(createUser)) {
-			spec = spec.and(DayOffSpecification.hasCreateUser(createUser));
+		if (employeeName != null && StringUtils.hasText(employeeName)) {
+			spec = spec.and(DayOffSpecification.hasEmployeeName(employeeName));
 		}
 
-		if (boss != null && StringUtils.hasText(boss)) {
-			spec = spec.and(DayOffSpecification.hasBoss(boss));
+		if (approverName != null && StringUtils.hasText(approverName)) {
+			spec = spec.and(DayOffSpecification.hasApproverName(approverName));
 		}
 
 		if (createDateStart != null && createDateEnd != null) {
-			spec = spec.and(DayOffSpecification.hasCreateDate(createDateStart, createDateEnd));
+			spec = spec.and(DayOffSpecification.createDateIsBeetwen(createDateStart, createDateEnd));
 		}
 
-		if (startDayOffDate != null && endDayOffDate != null) {
-			spec = spec.and(DayOffSpecification.hasDayOffDate(startDayOffDate, endDayOffDate));
+		if (startDayOffDate != null ) {
+			spec = spec.and(DayOffSpecification.isStartDateLeesThan(startDayOffDate));
 		}
 		
-		return dayOffRepository.findAll(spec, Sort.by("id"));
+		if (endDayOffDate != null ) {
+			spec = spec.and(DayOffSpecification.isEndtDateGreaterThan(endDayOffDate));
+		}
+
+		return dayOffRepository.findAll(spec, pageable);
+	}
+	
+	@Transactional
+	public DayOff addDayOff(DayOff dayOff, long employeeId) {
+		Employee employee = employeeService.findById(employeeId).get();
+		employee.addDayOff(dayOff);
+		dayOff.setCreateDate(LocalDateTime.now());
+		return dayOffRepository.save(dayOff);
 	}
 
+	@Transactional
+	public void delete(long id) {
+		Optional<DayOff> savedDayOff = findById(id);
+		if (savedDayOff.get().getApproved() != null) {
+			throw new IllegalStateException();
+		}
+		savedDayOff.get().getEmployee().getDayOffs().remove(savedDayOff.get());
+		dayOffRepository.deleteById(id);
+	}
+	
+	@Transactional
+	public DayOff modifyDayOff(long id, DayOff dayOff) {
+		DayOff savedDayOff = findById(dayOff.getId()).get();
+		if (savedDayOff.getApproved() != null) {
+			throw new IllegalStateException();
+		}
+
+		savedDayOff.setStartDate(dayOff.getStartDate());
+		savedDayOff.setEndDate(dayOff.getEndDate());
+		savedDayOff.setCreateDate(LocalDateTime.now());
+			
+		return savedDayOff;
+	}
+
+	@Transactional
+	public DayOff approveDayOff(long id, long approvedId, boolean status) {
+		DayOff savedDayOff = findById(id).get();
+		Employee employee = savedDayOff.getEmployee();
+		Employee boss = employee.getBoss();
+		if (boss == null || !employee.getBoss().getId().equals(approvedId)) {
+			throw new IllegalStateException();
+		}
+		savedDayOff.setApproved(status);
+		savedDayOff.setApprovedDate(LocalDateTime.now());
+		savedDayOff.setApprover(employeeService.findById(approvedId).get());
+		return savedDayOff;
+	}
 }

@@ -3,6 +3,7 @@ package hu.webuni.hr.ferencjozsef.service;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import hu.webuni.hr.ferencjozsef.model.Employee;
 import hu.webuni.hr.ferencjozsef.model.Position;
 import hu.webuni.hr.ferencjozsef.repository.CompanyRepository;
 import hu.webuni.hr.ferencjozsef.repository.CompanyTypeRepository;
+import hu.webuni.hr.ferencjozsef.repository.DayOffRepository;
 import hu.webuni.hr.ferencjozsef.repository.EmployeeRepository;
 import hu.webuni.hr.ferencjozsef.repository.PositionDetailsByCompanyRepository;
 import hu.webuni.hr.ferencjozsef.repository.PositionRepository;
@@ -34,6 +36,12 @@ public class InitDbService {
 	
 	@Autowired
 	PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
+	
+	@Autowired
+	DayOffRepository dayOffRepository;
+	
+	@Autowired
+	PasswordEncoder  passwordEncoder;
 	
 	
 	public void clearDB() {
@@ -101,6 +109,19 @@ public class InitDbService {
 		employee1ToComoapny2.setCompany(company2);
 		employeeRepository.save(employee1ToComoapny2);
 
+		Employee employeeToDayOff = new Employee(null, "Nagy Áron",positionTestManager, 450_000, LocalDateTime.now(), null);
+		employeeToDayOff.setUsername("user1");
+		employeeToDayOff.setPassword(passwordEncoder.encode("pass1"));
+		Employee savedEmloyeeHoliday = employeeRepository.save(employeeToDayOff);
+		Employee boss = new Employee(null, "Kiss Géza",positionTestManager, 450_000, LocalDateTime.now(), null);
+		boss.setUsername("user2");
+		boss.setPassword(passwordEncoder.encode("pass2"));
+		Employee savedBoss = employeeRepository.save(boss);
+		savedEmloyeeHoliday.setBoss(savedBoss);
+
+
+		
+		
 //		Company companyPositions = new Company(null, 222, "IT Poziciók", "1111 Budapest HR utca 11", companyTypeKft, null);
 //		
 //		PositionDetailsByCompany pdByCompanyTester = new PositionDetailsByCompany();

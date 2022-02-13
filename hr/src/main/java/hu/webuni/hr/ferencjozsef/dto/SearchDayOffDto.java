@@ -5,8 +5,8 @@ import java.time.LocalDate;
 public class SearchDayOffDto {
 
 	private Boolean approved;
-	private String createUser; 
-	private String boss;
+	private String employeeName; 
+	private String approverName;
 	private LocalDate createDateStart;
 	private LocalDate createDateEnd;
 	private LocalDate startDayOffDate;
@@ -16,12 +16,12 @@ public class SearchDayOffDto {
 
 	}
 
-	public SearchDayOffDto(Boolean approved, String createUser, String boss, LocalDate createDateStart,
+	public SearchDayOffDto(Boolean approved, String employeeName, String approverName, LocalDate createDateStart,
 			LocalDate createDateEnd, LocalDate startDayOffDate, LocalDate endDayOffDate) {
 		super();
 		this.approved = approved;
-		this.createUser = createUser;
-		this.boss = boss;
+		this.employeeName = employeeName;
+		this.approverName = approverName;
 		this.createDateStart = createDateStart;
 		this.createDateEnd = createDateEnd;
 		this.startDayOffDate = startDayOffDate;
@@ -36,20 +36,20 @@ public class SearchDayOffDto {
 		this.approved = approved;
 	}
 
-	public String getCreateUser() {
-		return createUser;
+	public String getEmployeeName() {
+		return employeeName;
 	}
 
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
 	}
 
-	public String getBoss() {
-		return boss;
+	public String getApproverName() {
+		return approverName;
 	}
 
-	public void setBoss(String boss) {
-		this.boss = boss;
+	public void setApproverName(String approverName) {
+		this.approverName = approverName;
 	}
 
 	public LocalDate getCreateDateStart() {

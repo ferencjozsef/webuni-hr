@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class DayOff {
@@ -15,25 +16,16 @@ public class DayOff {
 	private Long id;
 	private LocalDate startDate;
 	private LocalDate endDate;
-	private String createUser;
+	@ManyToOne
+	private Employee employee;
 	private LocalDateTime createDate;
+	@ManyToOne
+	private Employee approver;
 	private Boolean approved;
-	private String boss;
+	private LocalDateTime approvedDate;
 
 	public DayOff() {
 
-	}
-
-	public DayOff(Long id, LocalDate startDate, LocalDate endDate, String createUser, LocalDateTime createDate,
-			Boolean approved, String boss) {
-		super();
-		this.id = id;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.createUser = createUser;
-		this.createDate = createDate;
-		this.approved = approved;
-		this.boss = boss;
 	}
 
 	public Long getId() {
@@ -60,12 +52,12 @@ public class DayOff {
 		this.endDate = endDate;
 	}
 
-	public String getCreateUser() {
-		return createUser;
+	public Employee getEmployee() {
+		return employee;
 	}
 
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
 	}
 
 	public LocalDateTime getCreateDate() {
@@ -76,6 +68,14 @@ public class DayOff {
 		this.createDate = createDate;
 	}
 
+	public Employee getApprover() {
+		return approver;
+	}
+
+	public void setApprover(Employee approver) {
+		this.approver = approver;
+	}
+
 	public Boolean getApproved() {
 		return approved;
 	}
@@ -84,11 +84,11 @@ public class DayOff {
 		this.approved = approved;
 	}
 
-	public String getBoss() {
-		return boss;
+	public LocalDateTime getApprovedDate() {
+		return approvedDate;
 	}
 
-	public void setBoss(String boss) {
-		this.boss = boss;
+	public void setApprovedDate(LocalDateTime approvedDate) {
+		this.approvedDate = approvedDate;
 	}
 }

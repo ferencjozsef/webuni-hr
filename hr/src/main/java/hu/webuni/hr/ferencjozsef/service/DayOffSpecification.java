@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import hu.webuni.hr.ferencjozsef.model.DayOff;
 import hu.webuni.hr.ferencjozsef.model.DayOff_;
+import hu.webuni.hr.ferencjozsef.model.Employee_;
 
 public class DayOffSpecification {
 	
@@ -17,17 +18,19 @@ public class DayOffSpecification {
 	}
 
 	// Az igény leadója: elég a név elejánek egyeznie, case-insensitive módon
-	public static Specification<DayOff> hasCreateUser(String createUserName) {
-		return (root, cq, cb) -> cb.like(cb.upper(root.get(DayOff_.createUser)), createUserName.toUpperCase() + "%");
+	public static Specification<DayOff> hasEmployeeName(String employeeName) {
+		return (root, cq, cb) -> cb.like(cb.upper(root.get(DayOff_.employee).get(Employee_.name)), 
+				employeeName.toUpperCase() + "%");
 	}
 
 	// Az igény elbirálója: elég a név elejánek egyeznie, case-insensitive módon
-	public static Specification<DayOff> hasBoss(String bossName) {
-		return (root, cq, cb) -> cb.like(cb.upper(root.get(DayOff_.boss)), bossName.toUpperCase() + "%");
+	public static Specification<DayOff> hasApproverName(String bossName) {
+		return (root, cq, cb) -> cb.like(cb.upper(root.get(DayOff_.approver).get(Employee_.name)),
+				bossName.toUpperCase() + "%");
 	}
 
 	// Tól/ig határokkal az igény leadásának dátuma
-	public static Specification<DayOff> hasCreateDate(LocalDate startDate, LocalDate endDate) {
+	public static Specification<DayOff> createDateIsBeetwen(LocalDate startDate, LocalDate endDate) {
 		LocalDateTime startOfDay = LocalDateTime.of(startDate, LocalTime.of(0, 0));
 		LocalDateTime endOfDay = LocalDateTime.of(endDate, LocalTime.of(0, 0)).plusDays(1);
 		return (root, cq, cb) -> cb.between(root.get(DayOff_.createDate), startOfDay, endOfDay);
@@ -35,11 +38,12 @@ public class DayOffSpecification {
 
 	// Tól/ig határokkal az igényelt szabadság időszakra. Az jelent találatot, ha van átfedés a szűrésnél
 	// megadott két dátum, és a szabadság kezdő és végdátuma által meghatározott két időintervallum között
-	public static Specification<DayOff> hasDayOffDate(LocalDate startDate, LocalDate endDate) {
-//		return (root, cq, cb) -> cb.and(cb.between(root.get(DayOff_.startDate), startDate, endDate),
-//										cb.between(root.get(DayOff_.endDate), startDate, endDate));
-		return (root, cq, cb) -> cb.equal(cb.greaterThan(root.get(DayOff_.startDate), startDate),
-										cb.lessThan(root.get(DayOff_.endDate), endDate));
-
+	public static Specification<DayOff> isStartDateLeesThan(LocalDate startDate) {
+		return (root, cq, cb) -> cb.lessThan(root.get(DayOff_.startDate), startDate);
 	}
+
+	public static Specification<DayOff> isEndtDateGreaterThan(LocalDate endDate) {
+		return (root, cq, cb) -> cb.greaterThan(root.get(DayOff_.endDate), endDate);
+	}
+
 }

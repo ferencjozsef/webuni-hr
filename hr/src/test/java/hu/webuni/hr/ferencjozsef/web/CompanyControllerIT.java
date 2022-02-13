@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
@@ -48,10 +49,23 @@ public class CompanyControllerIT {
 	@Autowired
 	PositionRepository positionRepository;
 	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
+	private String username = "testuser";
+	private String pass = "pass";
+	
 	@BeforeEach
 	public void inti() {
 		employeeRepository.deleteAll();
 		companyRepository.deleteAll();
+		
+		if (employeeRepository.findByUsername(username).isEmpty()) {
+			Employee employee = new Employee();
+			employee.setUsername(username);
+			employee.setPassword(passwordEncoder.encode(pass));
+			employeeRepository.save(employee);
+		}
 	}
 	
 	@Test
@@ -133,6 +147,7 @@ public class CompanyControllerIT {
 		return webTestClient
 				.get()
 				.uri(path)
+				.headers(headers -> headers.setBasicAuth(username,pass))
 				.exchange()
 				.expectStatus()
 				.isOk()
@@ -146,6 +161,7 @@ public class CompanyControllerIT {
 		return webTestClient
 				.post()
 				.uri(path)
+				.headers(headers -> headers.setBasicAuth(username,pass))
 				.bodyValue(newEmployeeDto)
 				.exchange()
 				.expectStatus()
@@ -157,6 +173,7 @@ public class CompanyControllerIT {
 		return webTestClient
 				.delete()
 				.uri(path)
+				.headers(headers -> headers.setBasicAuth(username,pass))
 				.exchange()
 				.expectStatus()
 				.isOk();
@@ -167,6 +184,7 @@ public class CompanyControllerIT {
 		return webTestClient
 				.put()
 				.uri(path)
+				.headers(headers -> headers.setBasicAuth(username,pass))
 				.bodyValue(addEmployees)
 				.exchange()
 				.expectStatus()

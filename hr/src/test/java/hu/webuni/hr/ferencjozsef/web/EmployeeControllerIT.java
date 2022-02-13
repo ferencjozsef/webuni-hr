@@ -12,15 +12,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import hu.webuni.hr.ferencjozsef.dto.EmployeeDto;
 import hu.webuni.hr.ferencjozsef.dto.PositionDto;
 import hu.webuni.hr.ferencjozsef.mapper.PositionMapper;
+import hu.webuni.hr.ferencjozsef.model.Employee;
 import hu.webuni.hr.ferencjozsef.repository.EmployeeRepository;
 import hu.webuni.hr.ferencjozsef.repository.PositionRepository;
 import hu.webuni.hr.ferencjozsef.service.PositionService;
+import io.netty.handler.codec.Headers;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class EmployeeControllerIT {
@@ -42,10 +45,23 @@ public class EmployeeControllerIT {
 	@Autowired
 	EmployeeRepository employeeRepository;
 	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
+	private String username = "testuser";
+	private String pass = "pass";
+	
 	@BeforeEach
-	public void inti() {
+	public void init() {
 		employeeRepository.deleteAll();
 		positionRepository.deleteAll();
+		
+		if (employeeRepository.findByUsername(username).isEmpty()) {
+			Employee employee = new Employee();
+			employee.setUsername(username);
+			employee.setPassword(passwordEncoder.encode(pass));
+			employeeRepository.save(employee);
+		}
 	}
 
 	@Test
@@ -138,6 +154,7 @@ public class EmployeeControllerIT {
 		List<EmployeeDto> responseList = webTestClient
 											.get()
 											.uri(BASE_URI)
+											.headers(headers -> headers.setBasicAuth(username,pass))
 											.exchange()
 											.expectStatus()
 											.isOk()
@@ -155,6 +172,7 @@ public class EmployeeControllerIT {
 		return webTestClient
 				.post()
 				.uri(BASE_URI)
+				.headers(headers -> headers.setBasicAuth(username,pass))
 				.bodyValue(newEmployeeDto)
 				.exchange();
 	}
@@ -163,6 +181,7 @@ public class EmployeeControllerIT {
 		return webTestClient
 				.put()
 				.uri(BASE_URI + "/" + employeeDto.getId())
+				.headers(headers -> headers.setBasicAuth(username,pass))
 				.bodyValue(employeeDto)
 				.exchange();
 	}
