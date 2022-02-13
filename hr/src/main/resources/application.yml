@@ -29,3 +29,6 @@ hr:
         6: 6
         8: 8
         10: 10
+  jwt:
+    secret: hrsecret
+    issuer: HrApp

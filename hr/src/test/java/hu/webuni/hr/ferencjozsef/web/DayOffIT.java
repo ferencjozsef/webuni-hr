@@ -1,7 +1,6 @@
 package hu.webuni.hr.ferencjozsef.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -19,7 +18,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import hu.webuni.hr.ferencjozsef.dto.DayOffDto;
-import hu.webuni.hr.ferencjozsef.dto.EmployeeDto;
 import hu.webuni.hr.ferencjozsef.model.Employee;
 import hu.webuni.hr.ferencjozsef.repository.DayOffRepository;
 import hu.webuni.hr.ferencjozsef.repository.EmployeeRepository;

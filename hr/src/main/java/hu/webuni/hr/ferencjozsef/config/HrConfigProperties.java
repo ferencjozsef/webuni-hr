@@ -102,5 +102,46 @@ public class HrConfigProperties {
 			this.limitsAndPercents = limitsAndPercents;
 		}
 	}
+
+	private Jwt jwt = new Jwt();
 	
+	public Jwt getJwt() {
+		return jwt;
+	}
+
+	public void setJwt(Jwt jwt) {
+		this.jwt = jwt;
+	}
+
+	public static class Jwt {
+		private String secret;
+		private String algorithm;
+		private int expires;
+		private String issuer;
+		
+		public String getSecret() {
+			return secret;
+		}
+		public void setSecret(String secret) {
+			this.secret = secret;
+		}
+		public String getAlgorithm() {
+			return algorithm;
+		}
+		public void setAlgorithm(String algorithm) {
+			this.algorithm = algorithm;
+		}
+		public int getExpires() {
+			return expires;
+		}
+		public void setExpires(int expires) {
+			this.expires = expires;
+		}
+		public String getIssuer() {
+			return issuer;
+		}
+		public void setIssuer(String issuer) {
+			this.issuer = issuer;
+		}
+	}
 }

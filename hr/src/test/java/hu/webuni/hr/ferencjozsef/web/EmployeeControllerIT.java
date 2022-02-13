@@ -23,7 +23,6 @@ import hu.webuni.hr.ferencjozsef.model.Employee;
 import hu.webuni.hr.ferencjozsef.repository.EmployeeRepository;
 import hu.webuni.hr.ferencjozsef.repository.PositionRepository;
 import hu.webuni.hr.ferencjozsef.service.PositionService;
-import io.netty.handler.codec.Headers;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class EmployeeControllerIT {

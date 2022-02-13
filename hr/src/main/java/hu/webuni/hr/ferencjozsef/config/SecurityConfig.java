@@ -3,7 +3,6 @@ package hu.webuni.hr.ferencjozsef.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import hu.webuni.hr.ferencjozsef.security.HrUerDetailsService;
+import hu.webuni.hr.ferencjozsef.security.JwtAuthFilter;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -26,8 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	UserDetailsService userDetailsService;
 	
-//	@Autowired
-//	JwtAuthFilter jwtAuthFilter;
+	@Autowired
+	JwtAuthFilter jwtAuthFilter;
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -48,18 +50,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-			.httpBasic()
-			.and()
+//			.httpBasic()
+//			.and()
 			.csrf().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 			.authorizeRequests()
-//			.antMatchers("/api/login/**").permitAll()
-//			.antMatchers(HttpMethod.POST, "/api/airports/**").hasAuthority("admin")
-//			.antMatchers(HttpMethod.PUT, "/api/airports/**").hasAnyAuthority("user", "admin")
+			.antMatchers("/api/login/**").permitAll()
 			.anyRequest().authenticated();
 		
-//		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	@Bean
@@ -74,5 +74,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
+	}
+	
+	@Override
+	@Bean
+	public UserDetailsService userDetailsService() {
+		return new HrUerDetailsService();
 	}
 }

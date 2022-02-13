@@ -22,7 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 import hu.webuni.hr.ferencjozsef.dto.EmployeeDto;
 import hu.webuni.hr.ferencjozsef.mapper.EmployeeMapper;
 import hu.webuni.hr.ferencjozsef.model.Employee;
-import hu.webuni.hr.ferencjozsef.repository.EmployeeRepository;
 import hu.webuni.hr.ferencjozsef.service.EmployeeService;
 
 @RestController

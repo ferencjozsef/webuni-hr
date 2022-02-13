@@ -1,5 +1,10 @@
 {"properties": [
   {
+    "name": "hr.jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.jwt.secret'"
+  },
+  {
     "name": "hr.salary.def.percent",
     "type": "java.lang.String",
     "description": "A description for 'hr.salary.def.percent'"
@@ -58,5 +63,10 @@
     "name": "hr.salary.smart.limitsAndPercents.10",
     "type": "java.lang.String",
     "description": "A description for 'hr.salary.smart.limitsAndPercents.10'"
+  },
+  {
+    "name": "hr.jwt.issuer",
+    "type": "java.lang.String",
+    "description": "A description for 'hr.jwt.issuer'"
   }
 ]}
