@@ -19,6 +19,7 @@ import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import hu.webuni.hr.ferencjozsef.dto.CompanyDto;
 import hu.webuni.hr.ferencjozsef.dto.EmployeeDto;
+import hu.webuni.hr.ferencjozsef.dto.LoginDto;
 import hu.webuni.hr.ferencjozsef.mapper.EmployeeMapper;
 import hu.webuni.hr.ferencjozsef.model.Company;
 import hu.webuni.hr.ferencjozsef.model.Education;
@@ -54,6 +55,7 @@ public class CompanyControllerIT {
 	
 	private String username = "testuser";
 	private String pass = "pass";
+	private String jwt;
 	
 	@BeforeEach
 	public void inti() {
@@ -65,6 +67,19 @@ public class CompanyControllerIT {
 			employee.setUsername(username);
 			employee.setPassword(passwordEncoder.encode(pass));
 			employeeRepository.save(employee);
+
+			LoginDto loginDto = new LoginDto();
+			loginDto.setUsername(username);
+			loginDto.setPassword(pass);
+	
+			jwt = webTestClient
+					.post()
+					.uri("/api/login")
+					.bodyValue(loginDto)
+					.exchange()
+					.expectBody(String.class)
+					.returnResult()
+					.getResponseBody();
 		}
 	}
 	
@@ -147,7 +162,8 @@ public class CompanyControllerIT {
 		return webTestClient
 				.get()
 				.uri(path)
-				.headers(headers -> headers.setBasicAuth(username,pass))
+				//.headers(headers -> headers.setBasicAuth(username,pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.exchange()
 				.expectStatus()
 				.isOk()
@@ -161,7 +177,8 @@ public class CompanyControllerIT {
 		return webTestClient
 				.post()
 				.uri(path)
-				.headers(headers -> headers.setBasicAuth(username,pass))
+				//.headers(headers -> headers.setBasicAuth(username,pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.bodyValue(newEmployeeDto)
 				.exchange()
 				.expectStatus()
@@ -173,7 +190,8 @@ public class CompanyControllerIT {
 		return webTestClient
 				.delete()
 				.uri(path)
-				.headers(headers -> headers.setBasicAuth(username,pass))
+				//.headers(headers -> headers.setBasicAuth(username,pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.exchange()
 				.expectStatus()
 				.isOk();
@@ -184,7 +202,8 @@ public class CompanyControllerIT {
 		return webTestClient
 				.put()
 				.uri(path)
-				.headers(headers -> headers.setBasicAuth(username,pass))
+				//.headers(headers -> headers.setBasicAuth(username,pass))
+				.headers(headers -> headers.setBearerAuth(jwt))
 				.bodyValue(addEmployees)
 				.exchange()
 				.expectStatus()
@@ -209,23 +228,4 @@ public class CompanyControllerIT {
 	private Position createPosition(String name) {
 		return positionRepository.save(new Position(name, Education.COLLEGE));
 	}
-
-	/*
-	private List<CompanyDto> getAllCompanyies() {
-		List<CompanyDto> responseList = webTestClient
-											.get()
-											.uri(BASE_URI + "?full=true")
-											.exchange()
-											.expectStatus()
-											.isOk()
-											.expectBodyList(CompanyDto.class)
-											.returnResult()
-											.getResponseBody();
-
-		Collections.sort(responseList, Comparator.comparing(CompanyDto::getId));
-
-		return responseList;
-	}
-	*/
-
 }

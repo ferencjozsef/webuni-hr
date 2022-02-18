@@ -10,11 +10,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.ferencjozsef.model.Employee;
-import hu.webuni.hr.ferencjozsef.model.HrUser;
 import hu.webuni.hr.ferencjozsef.repository.EmployeeRepository;
 
 @Service
-public class HrUerDetailsService implements UserDetailsService {
+public class HrUserDetailsService implements UserDetailsService {
 	
 	@Autowired
 	EmployeeRepository employeeRepository;

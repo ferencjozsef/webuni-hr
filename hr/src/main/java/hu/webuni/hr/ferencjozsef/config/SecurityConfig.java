@@ -17,7 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import hu.webuni.hr.ferencjozsef.security.HrUerDetailsService;
+import hu.webuni.hr.ferencjozsef.security.HrUserDetailsService;
 import hu.webuni.hr.ferencjozsef.security.JwtAuthFilter;
 
 @Configuration
@@ -79,6 +79,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	@Bean
 	public UserDetailsService userDetailsService() {
-		return new HrUerDetailsService();
+		return new HrUserDetailsService();
 	}
 }

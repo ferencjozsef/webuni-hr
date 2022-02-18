@@ -1,9 +1,11 @@
-package hu.webuni.hr.ferencjozsef.model;
+package hu.webuni.hr.ferencjozsef.security;
 
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+
+import hu.webuni.hr.ferencjozsef.model.Employee;
 
 public class HrUser extends User {
 

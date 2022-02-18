@@ -1,7 +1,7 @@
 spring:
   profiles:
     active:
-    - smartadfasdf
+    - smart
   thymeleaf:
     cache: false
 #---  mvc:#---    format:#---      date-time: yyyy-MM-ddTHH:mm:ss
@@ -9,7 +9,7 @@ spring:
     username: hr
     password: hr
   jpa:    show-sql: true
-    hibernate:      ddl-auto: create
+    hibernate:      ddl-auto: create-drop
     open-in-view: false
  
 hr:
@@ -31,4 +31,7 @@ hr:
         10: 10
   jwt:
     secret: hrsecret
+    algorithm: HMAC256
+    expires: 10
     issuer: HrApp
+    

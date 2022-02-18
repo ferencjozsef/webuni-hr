@@ -28,6 +28,8 @@ public class Employee {
 	private String password;
 	@ManyToOne
 	private Employee boss;
+	@OneToMany(mappedBy = "boss")
+	private List<Employee> bossEmployees;
 	@ManyToOne
 	private Position position;
 	private int salary;
@@ -36,8 +38,7 @@ public class Employee {
 	private Company company;
 	@OneToMany(mappedBy = "employee")
 	private List<DayOff> dayOffs;
-	
-	
+
 	public Employee() {
 
 	}
@@ -92,6 +93,14 @@ public class Employee {
 		this.boss = boss;
 	}
 
+	public List<Employee> getBossEmployees() {
+		return bossEmployees;
+	}
+
+	public void setBossEmployees(List<Employee> bossEmployees) {
+		this.bossEmployees = bossEmployees;
+	}
+
 	public Position getPosition() {
 		return position;
 	}
@@ -141,5 +150,4 @@ public class Employee {
 		dayOff.setEmployee(this);
 		
 	}
-
 }

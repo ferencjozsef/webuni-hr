@@ -7,26 +7,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import hu.webuni.hr.ferencjozsef.model.Employee;
 import hu.webuni.hr.ferencjozsef.model.PositionDetailsByCompany;
-import hu.webuni.hr.ferencjozsef.repository.EmployeeRepository;
 import hu.webuni.hr.ferencjozsef.repository.PositionDetailsByCompanyRepository;
-import hu.webuni.hr.ferencjozsef.repository.PositionRepository;
 
 @Service
 public class SalaryService {
 	
 	private EmployeeService employeeService;
-	private PositionRepository positionRepository;
 	private PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
-	private EmployeeRepository employeeRepository;
 	
-	public SalaryService(EmployeeService employeeService, PositionRepository positionRepository,
-			PositionDetailsByCompanyRepository positionDetailsByCompanyRepository,
-			EmployeeRepository employeeRepository) {
+	public SalaryService(EmployeeService employeeService,
+			PositionDetailsByCompanyRepository positionDetailsByCompanyRepository) {
 		super();
 		this.employeeService = employeeService;
-		this.positionRepository = positionRepository;
 		this.positionDetailsByCompanyRepository = positionDetailsByCompanyRepository;
-		this.employeeRepository = employeeRepository;
 	}
 
 	public void setNewSalary(Employee employee) {

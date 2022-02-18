@@ -144,4 +144,30 @@ public class HrConfigProperties {
 			this.issuer = issuer;
 		}
 	}
+	
+	private Jwtp jwtp = new Jwtp();
+	
+	public Jwtp getJwtp() {
+		return jwtp;
+	}
+
+	public void setJwtp(Jwtp jwtp) {
+		this.jwtp = jwtp;
+	}
+
+	public static class Jwtp {
+		private String issuer;
+
+		public String getIssuer() {
+			return issuer;
+		}
+
+		public void setIssuer(String issuer) {
+			this.issuer = issuer;
+		}
+		
+		
+	}
+
+
 }

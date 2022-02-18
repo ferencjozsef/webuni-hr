@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -26,9 +27,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	// Visszaadja a céghez tartozó alkamazottakat
 	List<Employee> findByCompanyId(long id);
 
+	@EntityGraph(attributePaths = {"boss", "bossEmployees"})
 	Optional<Employee> findByUsername(String username);
-	
-//	@EntityGraph("Employee.full")
-//	@Query("SELECT e FROM Employee e")
-//	public List<Employee> findAll();
 }
